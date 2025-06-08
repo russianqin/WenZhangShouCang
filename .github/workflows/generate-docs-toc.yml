@@ -15,7 +15,7 @@ jobs:
         run: |
           # 遍历 code/ 目录下的所有 Markdown 文件，生成目录结构
           TOC="## 📚 代码文档目录\n\n"
-          TOC+="以下是 `code/` 目录下的所有文档：\n\n"
+          TOC+="以下是 \`code/\` 目录下的所有文档：\n\n"
           
           # 使用 find 命令查找所有 Markdown 文件并生成链接
           while IFS= read -r -d '' file; do
