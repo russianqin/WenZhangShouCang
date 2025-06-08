@@ -33,17 +33,39 @@ jobs:
             TOC+="${INDENT}- [${FILENAME}](${file})\n"
           done < <(find code -name "*.md" -print0 | sort -z)
           
-          # 保存目录到环境变量
-          echo "TOC<<EOF" >> $GITHUB_ENV
-          echo "$TOC" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          # 保存目录到文件
+          echo -e "$TOC" > toc_output.md
           
-      - name: Update README with TOC
-        uses: technote-space/replace-in-file-action@v1
-        with:
-          files: README.md
-          regexp: '(<!-- START CODE TOC -->)([\s\S]*)(<!-- END CODE TOC -->)'
-          replace: '$1\n${{ env.TOC }}\n$3'
+      - name: Replace TOC in README
+        run: |
+          # 替换 README 中的 TOC 部分
+          TEMP_FILE=$(mktemp)
+          
+          # 标记开始和结束的正则表达式
+          START_TAG="<!-- START CODE TOC -->"
+          END_TAG="<!-- END CODE TOC -->"
+          
+          # 替换内容
+          in_toc=false
+          while IFS= read -r line; do
+            if [[ $line == "$START_TAG" ]]; then
+              echo "$line" >> "$TEMP_FILE"
+              cat toc_output.md >> "$TEMP_FILE"
+              in_toc=true
+            elif [[ $line == "$END_TAG" ]]; then
+              echo "$line" >> "$TEMP_FILE"
+              in_toc=false
+            elif [[ $in_toc == false ]]; then
+              echo "$line" >> "$TEMP_FILE"
+            fi
+          done < README.md
+          
+          # 覆盖原文件
+          mv "$TEMP_FILE" README.md
+          
+          # 显示更新后的 README（可选）
+          echo "更新后的 README："
+          cat README.md
           
       - name: Commit changes
         run: |
