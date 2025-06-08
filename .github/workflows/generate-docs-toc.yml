@@ -1,1 +1,54 @@
-
+name: Generate Docs TOC
+on:
+  push:
+    branches:
+      - main  # 根据你的分支名称调整
+jobs:
+  generate-toc:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        
+      - name: Generate TOC for code/ directory
+        id: generate_toc
+        run: |
+          # 遍历 code/ 目录下的所有 Markdown 文件，生成目录结构
+          TOC="## 📚 代码文档目录\n\n"
+          TOC+="以下是 `code/` 目录下的所有文档：\n\n"
+          
+          # 使用 find 命令查找所有 Markdown 文件并生成链接
+          while IFS= read -r -d '' file; do
+            # 移除 code/ 前缀并转换为相对路径
+            REL_PATH="${file#code/}"
+            # 获取文件名（不含扩展名）
+            FILENAME=$(basename "$file" .md)
+            # 获取文件所在目录（相对路径）
+            DIR=$(dirname "$REL_PATH")
+            # 计算缩进级别（基于目录深度）
+            DEPTH=$(echo "$DIR" | tr '/' '\n' | wc -l)
+            # 生成缩进（两个空格 * 深度）
+            INDENT=$(printf "%*s" $((DEPTH * 2)) "")
+            # 添加到目录
+            TOC+="${INDENT}- [${FILENAME}](${file})\n"
+          done < <(find code -name "*.md" -print0 | sort -z)
+          
+          # 保存目录到环境变量
+          echo "TOC<<EOF" >> $GITHUB_ENV
+          echo "$TOC" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+          
+      - name: Update README with TOC
+        uses: technote-space/replace-in-file-action@v1
+        with:
+          files: README.md
+          regexp: '(<!-- START CODE TOC -->)([\s\S]*)(<!-- END CODE TOC -->)'
+          replace: '$1\n${{ env.TOC }}\n$3'
+          
+      - name: Commit changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add README.md
+          git commit -m "Update code documentation TOC" || echo "No changes to commit"
+          git push
