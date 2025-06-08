@@ -1,0 +1,40 @@
+name: Generate TOC
+on: [push]  # 每次 push 时触发
+jobs:
+  generate-toc:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Generate TOC
+        run: |
+          python -c "
+          import os
+          toc = ['# 目录']
+          for item in sorted(os.listdir('.')):
+              if item in {'README.md', '.git', '.github', 'node_modules'}:
+                  continue
+              if os.path.isfile(item):
+                  toc.append(f'- [{item}]({item})')
+              elif os.path.isdir(item):
+                  toc.append(f'- [{item}/]({item}/)')
+          with open('README.md', 'r') as f:
+              content = f.read()
+          if '# 目录' in content:
+              start = content.index('# 目录')
+              end = content.index('\n\n', start) if '\n\n' in content[start:] else len(content)
+              new_content = content[:start] + '\n'.join(toc) + content[end:]
+          else:
+              new_content = '\n'.join(toc) + '\n\n' + content
+          with open('README.md', 'w') as f:
+              f.write(new_content)
+          "
+          
+      - name: Commit changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add README.md
+          git commit -m "Update TOC" || echo "No changes to commit"
+          git push origin || echo "No changes to push"
