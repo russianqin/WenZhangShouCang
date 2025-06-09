@@ -1,5 +1,5 @@
 # 目录
-- [001.如何让小孩高考分数爆发式增长  陈经.md](https://raw.githubusercontent.com/russianqin/WenZhangShouCang/main/001.如何让小孩高考分数爆发式增长  陈经.md)
+- [001.如何让小孩高考分数爆发式增长（陈经）.md](https://raw.githubusercontent.com/russianqin/WenZhangShouCang/main/001.如何让小孩高考分数爆发式增长（陈经）.md)
 - [002.H-Game漫谈：同级生2.md](https://raw.githubusercontent.com/russianqin/WenZhangShouCang/main/002.H-Game漫谈：同级生2.md)
 - [003.有用与无用.md](https://raw.githubusercontent.com/russianqin/WenZhangShouCang/main/003.有用与无用.md)
 - [004.美国是怎样走入“历史的终结”的？.md](https://raw.githubusercontent.com/russianqin/WenZhangShouCang/main/004.美国是怎样走入“历史的终结”的？.md)
