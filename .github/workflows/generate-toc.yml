@@ -23,8 +23,7 @@ jobs:
               if item.endswith(('.jpg', '.png', '.txt')):
                   continue
               if os.path.isfile(item):
-                  toc.append(f'- [{item}]({item
-})')
+                  toc.append(f'- [{item}]({item})')
               elif os.path.isdir(item):
                   toc.append(f'- [{item}/]({item}/)')
           with open('README.md', 'r') as f:
