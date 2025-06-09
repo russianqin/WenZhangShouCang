@@ -23,8 +23,8 @@ jobs:
               if item.endswith(('.jpg', '.png', '.txt')):
                   continue
               if os.path.isfile(item):
-                  file_url = f'https://raw.githubusercontent.com/russianqin/WenZhangShouCang/main/{item}'
-                  toc.append(f'- [{item}]({file_url})')
+                  toc.append(f'- [{item}]({item
+})')
               elif os.path.isdir(item):
                   toc.append(f'- [{item}/]({item}/)')
           with open('README.md', 'r') as f:
