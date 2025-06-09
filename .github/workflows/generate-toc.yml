@@ -16,6 +16,11 @@ jobs:
         run: |
           python -c "
           import os
+          import re
+          # 从环境变量获取仓库信息
+         repo_owner = os.environ['REPO_OWNER']
+         repo_name = os.environ['REPO_NAME']
+         branch = os.environ['BRANCH']
           toc = ['# 目录']
           for item in sorted(os.listdir('.')):
               if item in {'README.md', '.git', '.github', 'node_modules'}:
@@ -23,6 +28,7 @@ jobs:
               if item.endswith(('.jpg', '.png', '.txt')):
                   continue
               if os.path.isfile(item):
+                  file_url = f'https://raw.githubusercontent.com/{repo_owner}/{repo_name}/{branch}/{item}'
                   toc.append(f'- [{item}]({item})')
               elif os.path.isdir(item):
                   toc.append(f'- [{item}/]({item}/)')
