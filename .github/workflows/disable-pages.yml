@@ -1,0 +1,34 @@
+name: 关闭收藏仓库 Pages（一次性）
+
+# 用途：删除 WenZhangShouCang 仓库的 GitHub Pages 站点
+#   —— 只下线"发布出来的那个网站"，仓库里的收藏文件不受影响。
+# 触发：本文件被提交到 main 时自动执行一次；也可在 Actions 里手动 Run workflow。
+# 完成后可以删除本文件（删掉不影响博客）。
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/disable-pages.yml"
+  workflow_dispatch:
+
+jobs:
+  delete-pages:
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+    steps:
+      - name: Delete Pages site
+        run: |
+          code=$(curl -sS -o /tmp/out.txt -w "%{http_code}" -X DELETE \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${{ github.repository }}/pages")
+          echo "HTTP $code"
+          cat /tmp/out.txt || true
+          if [ "$code" != "204" ] && [ "$code" != "404" ]; then
+            echo "::error::删除失败，请把上面这段信息发给我"
+            exit 1
+          fi
+          echo "已删除 Pages 站点（或本来就不存在）"
